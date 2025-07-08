@@ -1,0 +1,64 @@
+# Core Django Framework
+Django==5.1.4
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.0
+
+# Admin Interface
+django-unfold==0.40.0
+
+# Database
+psycopg2-binary==2.9.10
+django-redis==5.4.0
+redis==5.2.0
+
+# API Documentation
+drf-spectacular==0.27.2
+
+# Security & CORS
+django-cors-headers==4.6.0
+django-ratelimit==4.1.0
+
+# File Storage & Media
+boto3==1.35.82
+django-storages==1.14.4
+Pillow==11.0.0
+
+# Content Processing
+django-markdownx==4.0.7
+django-fernet-fields==0.6
+
+# Configuration
+python-decouple==3.8
+python-dotenv==1.0.1
+
+# Server & Production
+gunicorn==23.0.0
+whitenoise==6.8.2
+
+# Background Tasks
+celery==5.4.0
+
+# Logging & Monitoring
+structlog==24.4.0
+sentry-sdk==2.19.2
+
+# Authentication & OAuth
+requests-oauthlib==1.4.0
+requests==2.32.3
+
+# Translation
+deep-translator==1.11.4
+
+# Data Processing (Optional)
+pandas==2.2.3
+numpy==1.26.4
+
+# Utilities
+psutil==6.1.0
+user-agents==2.2.0
+
+# Development Dependencies (Remove in production)
+django-debug-toolbar==4.4.6
+pytest==8.3.4
+pytest-django==4.9.0
+coverage==7.6.9

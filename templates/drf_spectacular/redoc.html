@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📚 Cooplink API Documentation - Redoc</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/32/1828/1828911.png" sizes="32x32" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        redoc {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="redoc-container"></div>
+    
+    <script src="https://cdn.redoc.ly/redoc/v2.1.3/bundles/redoc.standalone.js"></script>
+    <script>
+        Redoc.init('{{ schema_url }}', {
+            theme: {
+                colors: {
+                    primary: {
+                        main: '#2c3e50'
+                    },
+                    success: {
+                        main: '#27ae60'
+                    },
+                    warning: {
+                        main: '#f39c12'
+                    },
+                    error: {
+                        main: '#e74c3c'
+                    }
+                },
+                typography: {
+                    fontSize: '14px',
+                    lineHeight: '1.5em',
+                    code: {
+                        fontSize: '13px',
+                        fontFamily: 'Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                    },
+                    headings: {
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+                        fontWeight: '600'
+                    }
+                },
+                sidebar: {
+                    width: '260px',
+                    backgroundColor: '#fafafa'
+                },
+                rightPanel: {
+                    backgroundColor: '#263238',
+                    width: '40%'
+                }
+            },
+            scrollYOffset: 60,
+            hideHostname: false,
+            expandResponses: "200,201",
+            requiredPropsFirst: true,
+            sortPropsAlphabetically: true,
+            showExtensions: true,
+            noAutoAuth: false,
+            pathInMiddlePanel: true,
+            hideLoading: false,
+            nativeScrollbars: false,
+            disableSearch: false,
+            onlyRequiredInSamples: false,
+            searchMaxDepth: 0,
+            hideFab: false,
+            simpleOneOfTypeLabel: false,
+            payloadSampleIdx: 0,
+            expandSingleSchemaField: false,
+            schemaExpansionLevel: 0,
+            showObjectSchemaExamples: false,
+            showSecuritySchemeType: false,
+            unstable_ignoreMimeTypeParameter: false
+        }, document.getElementById('redoc-container'));
+    </script>
+    
+    <script>
+        // Add custom header
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('[data-section-id="tag/Introduction"] h1, .redoc-wrap > div > div:first-child h1');
+            if (header) {
+                header.innerHTML = '🚀 ' + header.innerHTML;
+            }
+        });
+    </script>
+</body>
+</html>
