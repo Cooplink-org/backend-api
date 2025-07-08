@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            width: 23%;
+            text-align: center;
+        }
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .chart-container {
+            width: 45%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Admin Dashboard</h1>
+    </div>
+    <div class="container">
+        <div class="metrics">
+            <div class="card">
+                <h2>👥 {{ total_users }}</h2>
+                <p>Total Users</p>
+            </div>
+            <div class="card">
+                <h2>📁 {{ total_projects }}</h2>
+                <p>Total Projects</p>
+            </div>
+            <div class="card">
+                <h2>💰 {{ total_revenue }}</h2>
+                <p>Total Revenue</p>
+            </div>
+            <div class="card">
+                <h2>📈 {{ transactions_today }}</h2>
+                <p>Transactions Today</p>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="userGrowth"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="revenueTrend"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="projectCategories"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="transactionStatus"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"></script>
+    <script>
+        const userGrowthCtx = document.getElementById('userGrowth').getContext('2d');
+        const userGrowth = new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: {{ user_registration_chart.dates|safe }},
+                datasets: [{
+                    label: 'New Users',
+                    data: {{ user_registration_chart.data|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'User Growth (Last 30 days)'
+                    }
+                }
+            }
+        });
+
+        const revenueTrendCtx = document.getElementById('revenueTrend').getContext('2d');
+        const revenueTrend = new Chart(revenueTrendCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ revenue_trend_chart.dates|safe }},
+                datasets: [{
+                    label: 'Revenue (₩)',
+                    data: {{ revenue_trend_chart.data|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Revenue Trend (Last 30 days)'
+                    }
+                }
+            }
+        });
+
+        const projectCategoriesCtx = document.getElementById('projectCategories').getContext('2d');
+        const projectCategories = new Chart(projectCategoriesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ project_categories_chart.labels|safe }},
+                datasets: [{
+                    label: 'Projects',
+                    data: {{ project_categories_chart.data|safe }},
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Project Categories'
+                    }
+                }
+            }
+        });
+
+        const transactionStatusCtx = document.getElementById('transactionStatus').getContext('2d');
+        const transactionStatus = new Chart(transactionStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: {{ transaction_status_chart.labels|safe }},
+                datasets: [{
+                    label: 'Transactions',
+                    data: {{ transaction_status_chart.data|safe }},
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Transaction Status'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
