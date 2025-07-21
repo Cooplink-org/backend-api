@@ -1,7 +1,4 @@
 from .base import *
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
 
 DEBUG = False
 
@@ -57,20 +54,6 @@ else:
     WHITENOISE_USE_FINDERS = True
     WHITENOISE_AUTOREFRESH = True
 
-SENTRY_DSN = env('SENTRY_DSN', default='')
-if SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[
-            DjangoIntegration(),
-            CeleryIntegration(),
-        ],
-        traces_sample_rate=0.1,
-        send_default_pii=False,
-        environment='production',
-        release=env('APP_VERSION', default='1.0.0'),
-        before_send=lambda event, hint: event if not DEBUG else None,
-    )
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
