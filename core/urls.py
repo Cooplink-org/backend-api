@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 def api_root(request):
     return JsonResponse({
@@ -16,11 +15,6 @@ def api_root(request):
             'analytics': '/api/analytics/',
             'telegram': '/api/telegram/',
             'admin': '/api/admin/',
-            'documentation': {
-                'swagger': '/api/docs/',
-                'redoc': '/api/redoc/',
-                'schema': '/api/schema/'
-            }
         }
     })
 
@@ -35,8 +29,5 @@ urlpatterns = [
     path('api/analytics/', include(('apps.analytics.urls', 'analytics'), namespace='analytics')),
     # path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),
     path('api/admin/', include(('apps.admin_panel.urls', 'admin_panel'), namespace='admin_panel')),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
