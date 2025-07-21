@@ -33,7 +33,7 @@ urlpatterns = [
     path('api/news/', include(('apps.news.urls', 'news'), namespace='news')),
     path('api/payments/', include(('apps.payments.urls', 'payments'), namespace='payments')),
     path('api/analytics/', include(('apps.analytics.urls', 'analytics'), namespace='analytics')),
-    path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),
+    # path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),
     path('api/admin/', include(('apps.admin_panel.urls', 'admin_panel'), namespace='admin_panel')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
