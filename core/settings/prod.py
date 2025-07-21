@@ -4,7 +4,7 @@ DEBUG = False
 
 PAYMENT_MODE = 'production'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['cooplink.uz', 'cooplink.onrender.com', 'cloude.qzz.io', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'cooplink.uz', 'cooplink.onrender.com', 'cloude.qzz.io', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -68,8 +68,7 @@ DATABASES['default'].update({
     'CONN_MAX_AGE': 60,
     'OPTIONS': {
         'sslmode': 'require',
-        'connect_timeout': 10,
-        'options': '-c default_transaction_isolation=read_committed'
+        'connect_timeout': 10
     }
 })
 
@@ -175,9 +174,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_ratelimit.middleware.RatelimitMiddleware',
 ]
-
-if 'debug_toolbar' in INSTALLED_APPS:
-    INSTALLED_APPS.remove('debug_toolbar')
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['https://cooplink.uz', 'https://cloude.qzz.io', 'https://cooplink.onrender.com', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])

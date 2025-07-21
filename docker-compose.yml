@@ -8,8 +8,6 @@ services:
     container_name: cooplink_web
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -77,8 +75,6 @@ services:
     command: celery -A core worker -l info --concurrency=2
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
     volumes:
       - media_volume:/app/media
       - logs_volume:/app/logs
@@ -101,8 +97,6 @@ services:
     command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
     volumes:
       - logs_volume:/app/logs
     depends_on:
