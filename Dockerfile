@@ -34,4 +34,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python manage.py check --deploy || exit 1
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--worker-class", "sync", "--timeout", "120", "core.wsgi:application"]
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=8000", "--threads=4", "core.wsgi:application"]
