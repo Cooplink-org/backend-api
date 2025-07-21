@@ -5,8 +5,10 @@
 ### ✅ Fixed Production Issues
 - **Removed debug tools**: Eliminated all development debugging code
 - **Fixed syntax errors**: Corrected email settings syntax error in prod.py
+- **Fixed Sentry DSN bug**: Resolved "Unsupported scheme" error by conditionally initializing Sentry only when DSN is provided
 - **Removed insecure defaults**: Removed hardcoded debug values and insecure settings
 - **Optimized settings**: Set manage.py to use production settings by default
+- **Updated dependencies**: All package versions updated to latest compatible versions
 - **Cleaned codebase**: Removed comments and debug prints throughout the application
 
 ### ✅ CORS & Security Configuration

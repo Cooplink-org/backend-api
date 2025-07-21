@@ -57,9 +57,10 @@ else:
     WHITENOISE_USE_FINDERS = True
     WHITENOISE_AUTOREFRESH = True
 
-if env('SENTRY_DSN', default=''):
+SENTRY_DSN = env('SENTRY_DSN', default='')
+if SENTRY_DSN:
     sentry_sdk.init(
-        dsn=env('SENTRY_DSN'),
+        dsn=SENTRY_DSN,
         integrations=[
             DjangoIntegration(),
             CeleryIntegration(),
