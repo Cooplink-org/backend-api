@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 def api_root(request):
-    """API Root endpoint with available endpoints"""
     return JsonResponse({
         'message': 'Cooplink API - Backend Only',
         'version': '1.0.0',
@@ -28,33 +25,18 @@ def api_root(request):
     })
 
 urlpatterns = [
-    # API Root
     path('', api_root, name='api-root'),
     path('api/', api_root, name='api-root-with-prefix'),
-    
-    # Admin panel
     path('admin/', admin.site.urls),
-    
-    # API routes with namespaces
     path('api/auth/', include(('apps.accounts.urls', 'accounts'), namespace='accounts')),
     path('api/projects/', include(('apps.projects.urls', 'projects'), namespace='projects')),
     path('api/news/', include(('apps.news.urls', 'news'), namespace='news')),
     path('api/payments/', include(('apps.payments.urls', 'payments'), namespace='payments')),
     path('api/analytics/', include(('apps.analytics.urls', 'analytics'), namespace='analytics')),
-    # path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),  # Temporarily disabled
+    path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),
     path('api/admin/', include(('apps.admin_panel.urls', 'admin_panel'), namespace='admin_panel')),
-    
-    # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns

@@ -1,49 +1,154 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:14
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cooplink_web
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: cooplink
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cooplink.rule=Host(`cooplink.uz`)"
+      - "traefik.http.routers.cooplink.tls=true"
+      - "traefik.http.routers.cooplink.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cooplink.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check", "--deploy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    container_name: cooplink_redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
-      - .:/app
+      - redis_data:/data
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: cooplink_nginx
     ports:
-      - "8000:8000"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/production.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
     depends_on:
-      - db
-      - redis
-    environment:
-      - DEBUG=True
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/cooplink
-      - REDIS_URL=redis://redis:6379/0
+      - web
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   celery:
-    build: .
-    command: celery -A core worker -l info
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-      - redis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cooplink_celery
+    command: celery -A core worker -l info --concurrency=2
+    env_file:
+      - .env
     environment:
-      - DEBUG=True
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/cooplink
-      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
+    volumes:
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "celery", "-A", "core", "status"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cooplink_celery_beat
+    command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://avnadmin:AVNS_8LO-3eOT9gvprUEFL2X@pg-2940a079-djangocourse37-983a.j.aivencloud.com:25822/defaultdb?sslmode=require
+    volumes:
+      - logs_volume:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+
+  backup:
+    image: postgres:15-alpine
+    container_name: cooplink_backup
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    networks:
+      - cooplink_network
+    restart: "no"
+    profiles:
+      - backup
+
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: cooplink_monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - cooplink_network
+    restart: unless-stopped
+    profiles:
+      - monitoring
 
 volumes:
   postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+  logs_volume:
+  prometheus_data:
+
+networks:
+  cooplink_network:
+    driver: bridge

@@ -1,35 +1,20 @@
 import os
 from pathlib import Path
-from decouple import config
-import structlog
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me')
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+SECRET_KEY = env('SECRET_KEY')
 
-# Enhanced ALLOWED_HOSTS configuration
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    'e009-213-230-93-69.ngrok-free.app',
-    'c5c2-213-230-93-60.ngrok-free.app',
-    '.herokuapp.com',
-    '.vercel.app',
-    '.lovable.app',
-    '.pythonanywhere.com',
-    '.railway.app',
-    '.cooplink.uz',
-    'cooplink.uz',
-    'www.cooplink.uz',
-    'api.cooplink.uz',
-]
+DEBUG = env('DEBUG')
 
-# Add custom ALLOWED_HOSTS from environment
-if config('ALLOWED_HOSTS', default=''):
-    ALLOWED_HOSTS.extend(config('ALLOWED_HOSTS').split(','))
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -77,7 +62,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-# Templates needed for Django admin and API documentation
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -87,7 +71,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -99,23 +82,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='defaultdb'),
-        'USER': config('DB_USER', default='avnadmin'),
-        'PASSWORD': config('DB_PASSWORD', default='AVNS_8LO-3eOT9gvprUEFL2X'),
-        'HOST': config('DB_HOST', default='pg-2940a079-djangocourse37-983a.j.aivencloud.com'),
-        'PORT': config('DB_PORT', default='25822'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
-    }
+    'default': env.db('DATABASE_URL', default='postgres://user:password@host:port/dbname')
 }
+
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/0'),
+        'LOCATION': env('REDIS_URL', default='redis://localhost:6379/0'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -142,7 +116,6 @@ TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
-# Static files only for admin and API docs
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -189,80 +162,44 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }
 
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5500',
-    'https://e009-213-230-93-69.ngrok-free.app',
-    'https://cooplink.uz',
-    'https://www.cooplink.uz',
-    'https://api.cooplink.uz',
-    'https://*.vercel.app',
-    'https://*.lovable.app',
-    'https://*.pythonanywhere.com',
-]
-
-if config('CORS_ALLOWED_ORIGINS', default=''):
-    CORS_ALLOWED_ORIGINS.extend(config('CORS_ALLOWED_ORIGINS').split(','))
-
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['http://localhost:3000'])
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False  # Never allow all origins in production
+CORS_ALLOW_ALL_ORIGINS = False
 
-# CSRF Configuration
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5500',
-    'https://cooplink.uz',
-    'https://e009-213-230-93-69.ngrok-free.app',
-    'https://www.cooplink.uz',
-    'https://api.cooplink.uz',
-    'https://*.vercel.app',
-    'https://*.lovable.app',
-    'https://*.pythonanywhere.com',
-]
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://localhost:3000'])
 
-if config('CSRF_TRUSTED_ORIGINS', default=''):
-    CSRF_TRUSTED_ORIGINS.extend(config('CSRF_TRUSTED_ORIGINS').split(','))
-
-CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
-# GitHub OAuth Configuration
-GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID', default='')
-GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET', default='')
-GITHUB_REDIRECT_URI = config('GITHUB_REDIRECT_URI', default='http://localhost:3000/auth/github/callback')
+GITHUB_CLIENT_ID = env('GITHUB_CLIENT_ID', default='')
+GITHUB_CLIENT_SECRET = env('GITHUB_CLIENT_SECRET', default='')
+GITHUB_REDIRECT_URI = env('GITHUB_REDIRECT_URI', default='http://localhost:3000/auth/github/callback')
 
-# Feature Flags
-ENABLE_ANALYTICS = config('ENABLE_ANALYTICS', default=True, cast=bool)
-ENABLE_NOTIFICATIONS = config('ENABLE_NOTIFICATIONS', default=True, cast=bool)
-ENABLE_PAYMENT_GATEWAY = config('ENABLE_PAYMENT_GATEWAY', default=True, cast=bool)
+ENABLE_ANALYTICS = env.bool('ENABLE_ANALYTICS', default=True)
+ENABLE_NOTIFICATIONS = env.bool('ENABLE_NOTIFICATIONS', default=True)
+ENABLE_PAYMENT_GATEWAY = env.bool('ENABLE_PAYMENT_GATEWAY', default=True)
 
-# Performance & Limits
-API_RATE_LIMIT_PER_MINUTE = config('API_RATE_LIMIT_PER_MINUTE', default=60, cast=int)
-API_RATE_LIMIT_PER_HOUR = config('API_RATE_LIMIT_PER_HOUR', default=1000, cast=int)
-MAX_UPLOAD_SIZE = config('MAX_UPLOAD_SIZE', default=104857600, cast=int)  # 100MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = config('FILE_UPLOAD_MAX_MEMORY_SIZE', default=5242880, cast=int)  # 5MB
+API_RATE_LIMIT_PER_MINUTE = env.int('API_RATE_LIMIT_PER_MINUTE', default=60)
+API_RATE_LIMIT_PER_HOUR = env.int('API_RATE_LIMIT_PER_HOUR', default=1000)
+MAX_UPLOAD_SIZE = env.int('MAX_UPLOAD_SIZE', default=104857600)
+FILE_UPLOAD_MAX_MEMORY_SIZE = env.int('FILE_UPLOAD_MAX_MEMORY_SIZE', default=5242880)
 
-# Maintenance
-MAINTENANCE_MODE = config('MAINTENANCE_MODE', default=False, cast=bool)
-MAINTENANCE_MESSAGE = config('MAINTENANCE_MESSAGE', default='Site is under maintenance. Please check back soon.')
+MAINTENANCE_MODE = env.bool('MAINTENANCE_MODE', default=False)
+MAINTENANCE_MESSAGE = env('MAINTENANCE_MESSAGE', default='Site is under maintenance. Please check back soon.')
 
-MIRPAY_KASSA_ID = config('MIRPAY_KASSA_ID', default='1413')
-MIRPAY_API_KEY = config('MIRPAY_API_KEY', default='13ee7a1299bc5ced2e749899658a69c8')
-MIRPAY_BASE_URL = config('MIRPAY_BASE_URL', default='https://mirpay.uz/api')
-MIRPAY_SUCCESS_URL = config('MIRPAY_SUCCESS_URL', default='')
-MIRPAY_FAILURE_URL = config('MIRPAY_FAILURE_URL', default='')
+MIRPAY_KASSA_ID = env('MIRPAY_KASSA_ID', default='1413')
+MIRPAY_API_KEY = env('MIRPAY_API_KEY', default='')
+MIRPAY_BASE_URL = env('MIRPAY_BASE_URL', default='https://mirpay.uz/api')
+MIRPAY_SUCCESS_URL = env('MIRPAY_SUCCESS_URL', default='')
+MIRPAY_FAILURE_URL = env('MIRPAY_FAILURE_URL', default='')
 
 RATELIMIT_ENABLE = True
 RATELIMIT_USE_CACHE = 'default'
 
-# Create logs directory if it doesn't exist
 LOGS_DIR = BASE_DIR / 'logs'
 LOGS_DIR.mkdir(exist_ok=True)
 
@@ -284,7 +221,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOGS_DIR / 'django.log',
-            'maxBytes': 1024*1024*5,  # 5MB
+            'maxBytes': 1024*1024*5,
             'backupCount': 3,
             'formatter': 'verbose',
         },
@@ -312,30 +249,11 @@ LOGGING = {
     },
 }
 
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer()
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
-
-# Static files configuration for API-only
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# Django Unfold Configuration
 UNFOLD = {
     "SITE_TITLE": "Cooplink Admin",
     "SITE_HEADER": "Cooplink Administration",
@@ -438,9 +356,7 @@ UNFOLD = {
     ],
 }
 
-# Environment callback for Django Unfold
 def environment_callback(request):
-    """Return environment info for Django Unfold"""
     return {
         "name": "Development" if DEBUG else "Production",
         "color": "#10b981" if DEBUG else "#ef4444",
