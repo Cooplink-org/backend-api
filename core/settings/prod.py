@@ -4,7 +4,7 @@ DEBUG = False
 
 PAYMENT_MODE = 'production'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'cooplink.uz', 'cooplink.onrender.com', 'cloude.qzz.io', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'cooplink.uz', 'cooplink.onrender.com', 'cloude.qzz.io', '*.pythonanywhere.com', 'cooplinkapp.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -72,29 +72,45 @@ DATABASES['default'].update({
     }
 })
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL', default='redis://localhost:6379/0'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_KWARGS': {
-                'max_connections': 20,
-                'retry_on_timeout': True,
+# Cache configuration - fallback to database if Redis is not available
+if env('REDIS_URL', default=None):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': env('REDIS_URL'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+                'CONNECTION_POOL_KWARGS': {
+                    'max_connections': 20,
+                    'retry_on_timeout': True,
+                },
+                'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+                'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
             },
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
-            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
-        },
-        'KEY_PREFIX': 'cooplink_prod',
-        'TIMEOUT': 300,
+            'KEY_PREFIX': 'cooplink_prod',
+            'TIMEOUT': 300,
+        }
     }
-}
+else:
+    # Fallback to database cache if Redis is not available
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'django_cache_table',
+        }
+    }
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# Session configuration - use cached_db for reliability
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_CACHE_ALIAS = 'default'
 SESSION_COOKIE_AGE = 86400
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Celery configuration - disable if Redis is not available
+if not env('REDIS_URL', default=None):
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
 
 LOGGING = {
     'version': 1,
@@ -176,8 +192,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['https://cooplink.uz', 'https://cloude.qzz.io', 'https://cooplink.onrender.com', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://cooplink.uz', 'https://cloude.qzz.io', 'https://cooplink.onrender.com', 'https://*.pythonanywhere.com', 'https://*.sevella.com', 'https://*.sevella.app'])
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['https://cooplink.uz', 'https://cloude.qzz.io', 'https://cooplink.onrender.com', 'https://cooplinkapp.pythonanywhere.com', '*.pythonanywhere.com', '*.sevella.com', '*.sevella.app'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://cooplink.uz', 'https://cloude.qzz.io', 'https://cooplink.onrender.com', 'https://cooplinkapp.pythonanywhere.com', 'https://*.pythonanywhere.com', 'https://*.sevella.com', 'https://*.sevella.app'])
 
 RATELIMIT_ENABLE = True
 RATELIMIT_USE_CACHE = 'default'
