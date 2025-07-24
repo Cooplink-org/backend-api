@@ -29,5 +29,6 @@ urlpatterns = [
     path('api/analytics/', include(('apps.analytics.urls', 'analytics'), namespace='analytics')),
     # path('api/telegram/', include(('apps.telegram.urls', 'telegram'), namespace='telegram')),
     path('api/admin/', include(('apps.admin_panel.urls', 'admin_panel'), namespace='admin_panel')),
+    path('api/qa/', include(('apps.qa.urls', 'qa'), namespace='qa')),
 ]
 
