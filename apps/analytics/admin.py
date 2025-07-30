@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from django.db.models import Count, Avg
-from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import (
     UserActivity,
     PageView,
@@ -17,7 +17,7 @@ from .models import (
 
 
 @admin.register(UserActivity)
-class UserActivityAdmin(admin.ModelAdmin):
+class UserActivityAdmin(ModelAdmin):
     list_display = (
         'user',
         'action',
@@ -79,7 +79,7 @@ class UserActivityAdmin(admin.ModelAdmin):
 
 
 @admin.register(PageView)
-class PageViewAdmin(admin.ModelAdmin):
+class PageViewAdmin(ModelAdmin):
     list_display = (
         'user',
         'path',
@@ -146,7 +146,7 @@ class PageViewAdmin(admin.ModelAdmin):
 
 
 @admin.register(SearchQuery)
-class SearchQueryAdmin(admin.ModelAdmin):
+class SearchQueryAdmin(ModelAdmin):
     list_display = (
         'user',
         'query',
@@ -194,7 +194,7 @@ class SearchQueryAdmin(admin.ModelAdmin):
 
 
 @admin.register(RevenueAnalytics)
-class RevenueAnalyticsAdmin(admin.ModelAdmin):
+class RevenueAnalyticsAdmin(ModelAdmin):
     list_display = (
         'period',
         'date',
@@ -261,7 +261,7 @@ class RevenueAnalyticsAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserMetrics)
-class UserMetricsAdmin(admin.ModelAdmin):
+class UserMetricsAdmin(ModelAdmin):
     list_display = (
         'period',
         'date',
@@ -331,7 +331,7 @@ class UserMetricsAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProjectMetrics)
-class ProjectMetricsAdmin(admin.ModelAdmin):
+class ProjectMetricsAdmin(ModelAdmin):
     list_display = (
         'period',
         'date',
@@ -404,7 +404,7 @@ class ProjectMetricsAdmin(admin.ModelAdmin):
 
 
 @admin.register(TelegramMetrics)
-class TelegramMetricsAdmin(admin.ModelAdmin):
+class TelegramMetricsAdmin(ModelAdmin):
     list_display = (
         'period',
         'date',
@@ -464,7 +464,7 @@ class TelegramMetricsAdmin(admin.ModelAdmin):
 
 
 @admin.register(SystemMetrics)
-class SystemMetricsAdmin(admin.ModelAdmin):
+class SystemMetricsAdmin(ModelAdmin):
     list_display = (
         'timestamp',
         'cpu_usage_formatted',
@@ -538,7 +538,7 @@ class SystemMetricsAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomEvent)
-class CustomEventAdmin(admin.ModelAdmin):
+class CustomEventAdmin(ModelAdmin):
     list_display = (
         'name',
         'event_type',
