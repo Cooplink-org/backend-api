@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
+from unfold.admin import ModelAdmin
 from .models import NewsCategory, NewsArticle, NewsLike, NewsView, NewsComment, NewsTranslation
 
 
 @admin.register(NewsCategory)
-class NewsCategoryAdmin(admin.ModelAdmin):
+class NewsCategoryAdmin(ModelAdmin):
     list_display = ('name', 'slug', 'colored_name', 'articles_count', 'is_active', 'created_at')
     list_filter = ('is_active', 'created_at')
     search_fields = ('name', 'description')
@@ -39,7 +40,7 @@ class NewsCommentInline(admin.TabularInline):
 
 
 @admin.register(NewsArticle)
-class NewsArticleAdmin(admin.ModelAdmin):
+class NewsArticleAdmin(ModelAdmin):
     list_display = ('title', 'author', 'category', 'status', 'priority', 'is_featured', 'is_pinned', 'views_count', 'likes_count', 'published_at', 'created_at')
     list_filter = ('status', 'priority', 'is_featured', 'is_pinned', 'category', 'created_at', 'published_at')
     search_fields = ('title', 'excerpt', 'content', 'tags')
@@ -105,7 +106,7 @@ class NewsArticleAdmin(admin.ModelAdmin):
 
 
 @admin.register(NewsLike)
-class NewsLikeAdmin(admin.ModelAdmin):
+class NewsLikeAdmin(ModelAdmin):
     list_display = ('user', 'article', 'created_at')
     list_filter = ('created_at', 'article__category')
     search_fields = ('user__username', 'user__email', 'article__title')
@@ -113,7 +114,7 @@ class NewsLikeAdmin(admin.ModelAdmin):
 
 
 @admin.register(NewsView)
-class NewsViewAdmin(admin.ModelAdmin):
+class NewsViewAdmin(ModelAdmin):
     list_display = ('article', 'user', 'ip_address', 'created_at')
     list_filter = ('created_at', 'article__category')
     search_fields = ('article__title', 'ip_address', 'user__username')
@@ -121,7 +122,7 @@ class NewsViewAdmin(admin.ModelAdmin):
 
 
 @admin.register(NewsComment)
-class NewsCommentAdmin(admin.ModelAdmin):
+class NewsCommentAdmin(ModelAdmin):
     list_display = ('article', 'user', 'short_content', 'is_approved', 'created_at')
     list_filter = ('is_approved', 'created_at', 'article__category')
     search_fields = ('content', 'user__username', 'article__title')
@@ -145,7 +146,7 @@ class NewsCommentAdmin(admin.ModelAdmin):
 
 
 @admin.register(NewsTranslation)
-class NewsTranslationAdmin(admin.ModelAdmin):
+class NewsTranslationAdmin(ModelAdmin):
     list_display = ('article', 'language', 'title', 'created_at')
     list_filter = ('language', 'created_at')
     search_fields = ('article__title', 'title', 'content')

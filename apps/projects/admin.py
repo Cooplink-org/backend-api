@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from django.db import models
-from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import (
     Project, 
     ProjectTranslation, 
@@ -26,7 +26,7 @@ class ReviewInline(admin.TabularInline):
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(ModelAdmin):
     list_display = (
         'title', 
         'seller', 
@@ -134,7 +134,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 @admin.register(Purchase)
-class PurchaseAdmin(admin.ModelAdmin):
+class PurchaseAdmin(ModelAdmin):
     list_display = (
         'id', 
         'buyer', 
@@ -210,7 +210,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 
 
 @admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
+class ReviewAdmin(ModelAdmin):
     list_display = (
         'project', 
         'buyer', 
@@ -238,7 +238,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProjectReport)
-class ProjectReportAdmin(admin.ModelAdmin):
+class ProjectReportAdmin(ModelAdmin):
     list_display = (
         'purchase', 
         'get_project_title', 
@@ -321,7 +321,7 @@ class ProjectReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProjectTranslation)
-class ProjectTranslationAdmin(admin.ModelAdmin):
+class ProjectTranslationAdmin(ModelAdmin):
     list_display = (
         'project', 
         'language', 

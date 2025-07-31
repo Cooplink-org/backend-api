@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from django.db.models import Count, Avg
+from unfold.admin import ModelAdmin
 # Admin models are registered in their respective apps
 from .models import (
     AdminAction,
@@ -17,7 +18,7 @@ from .models import (
 
 
 @admin.register(AdminAction)
-class AdminActionAdmin(admin.ModelAdmin):
+class AdminActionAdmin(ModelAdmin):
     list_display = (
         'admin',
         'action_type',
@@ -85,7 +86,7 @@ class AdminActionAdmin(admin.ModelAdmin):
 
 
 @admin.register(SystemConfiguration)
-class SystemConfigurationAdmin(admin.ModelAdmin):
+class SystemConfigurationAdmin(ModelAdmin):
     list_display = (
         'name',
         'config_type',
@@ -156,7 +157,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
 
 
 @admin.register(MaintenanceMode)
-class MaintenanceModeAdmin(admin.ModelAdmin):
+class MaintenanceModeAdmin(ModelAdmin):
     list_display = (
         'is_active',
         'title',
@@ -226,7 +227,7 @@ class MaintenanceModeAdmin(admin.ModelAdmin):
 
 
 @admin.register(AdminNotification)
-class AdminNotificationAdmin(admin.ModelAdmin):
+class AdminNotificationAdmin(ModelAdmin):
     list_display = (
         'title',
         'notification_type',
@@ -315,7 +316,7 @@ class AdminNotificationAdmin(admin.ModelAdmin):
 
 
 @admin.register(BackupRecord)
-class BackupRecordAdmin(admin.ModelAdmin):
+class BackupRecordAdmin(ModelAdmin):
     list_display = (
         'backup_type',
         'status',
@@ -396,7 +397,7 @@ class BackupRecordAdmin(admin.ModelAdmin):
 
 
 @admin.register(SystemHealth)
-class SystemHealthAdmin(admin.ModelAdmin):
+class SystemHealthAdmin(ModelAdmin):
     list_display = (
         'timestamp',
         'overall_status',
@@ -492,7 +493,7 @@ class SystemHealthAdmin(admin.ModelAdmin):
 
 
 @admin.register(AdminDashboardWidget)
-class AdminDashboardWidgetAdmin(admin.ModelAdmin):
+class AdminDashboardWidgetAdmin(ModelAdmin):
     list_display = (
         'admin',
         'widget_type',
@@ -558,7 +559,7 @@ class AdminDashboardWidgetAdmin(admin.ModelAdmin):
 
 
 @admin.register(BulkAction)
-class BulkActionAdmin(admin.ModelAdmin):
+class BulkActionAdmin(ModelAdmin):
     list_display = (
         'admin',
         'action_type',
@@ -636,7 +637,7 @@ class BulkActionAdmin(admin.ModelAdmin):
 
 
 @admin.register(AdminSession)
-class AdminSessionAdmin(admin.ModelAdmin):
+class AdminSessionAdmin(ModelAdmin):
     list_display = (
         'admin',
         'ip_address',

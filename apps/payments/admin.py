@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from django.db.models import Sum, Count
-from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import (
     PaymentMethod,
     Transaction,
@@ -23,7 +23,7 @@ class PaymentGatewayLogInline(admin.TabularInline):
 
 
 @admin.register(PaymentMethod)
-class PaymentMethodAdmin(admin.ModelAdmin):
+class PaymentMethodAdmin(ModelAdmin):
     list_display = (
         'name',
         'method_type',
@@ -67,7 +67,7 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transaction)
-class TransactionAdmin(admin.ModelAdmin):
+class TransactionAdmin(ModelAdmin):
     list_display = (
         'id',
         'user',
@@ -175,7 +175,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 @admin.register(WithdrawalRequest)
-class WithdrawalRequestAdmin(admin.ModelAdmin):
+class WithdrawalRequestAdmin(ModelAdmin):
     list_display = (
         'id',
         'user',
@@ -272,7 +272,7 @@ class WithdrawalRequestAdmin(admin.ModelAdmin):
 
 
 @admin.register(PaymentGatewayLog)
-class PaymentGatewayLogAdmin(admin.ModelAdmin):
+class PaymentGatewayLogAdmin(ModelAdmin):
     list_display = (
         'transaction',
         'gateway_name',
@@ -327,7 +327,7 @@ class PaymentGatewayLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(BalanceTransaction)
-class BalanceTransactionAdmin(admin.ModelAdmin):
+class BalanceTransactionAdmin(ModelAdmin):
     list_display = (
         'user',
         'transaction_type',
@@ -365,7 +365,7 @@ class BalanceTransactionAdmin(admin.ModelAdmin):
 
 
 @admin.register(PaymentConfiguration)
-class PaymentConfigurationAdmin(admin.ModelAdmin):
+class PaymentConfigurationAdmin(ModelAdmin):
     list_display = (
         'name',
         'value_preview',
@@ -384,7 +384,7 @@ class PaymentConfigurationAdmin(admin.ModelAdmin):
 
 
 @admin.register(RecurringPayment)
-class RecurringPaymentAdmin(admin.ModelAdmin):
+class RecurringPaymentAdmin(ModelAdmin):
     list_display = (
         'user',
         'name',
@@ -442,7 +442,7 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
 
 
 @admin.register(FinancialReport)
-class FinancialReportAdmin(admin.ModelAdmin):
+class FinancialReportAdmin(ModelAdmin):
     list_display = (
         'report_type',
         'period_start',
